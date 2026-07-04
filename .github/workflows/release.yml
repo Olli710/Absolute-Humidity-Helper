@@ -17,7 +17,18 @@ jobs:
         run: |
           zip -r absolute_humidity.zip custom_components/Absolute-Humidity-Helper
           cd ..
-
+      - name: ZIP custom_component
+        run: |
+            cd custom_components
+            if [ -d "absolute_humidity" ]; then
+                zip -r ../absolute_humidity.zip absolute_humidity
+            else
+                echo "Error: absolute_humidity directory not found in custom_components"
+                ls -la
+                exit 1
+           fi
+            cd ..
+   
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
