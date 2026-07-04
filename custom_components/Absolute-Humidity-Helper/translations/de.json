@@ -1,0 +1,14 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Absolute Luftfeuchtigkeit einrichten",
+        "description": "Bitte wähle die Sensoren für die Berechnung aus.",
+        "data": {
+          "temperature_sensor": "Temperatursensor",
+          "humidity_sensor": "Luftfeuchtigkeitssensor"
+        }
+      }
+    }
+  }
+}

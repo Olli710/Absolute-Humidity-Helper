@@ -1,7 +1,10 @@
 """Sensor platform for Absolute Humidity."""
 from __future__ import annotations
+from homeassistant.util.unit_conversion import TemperatureConverter
+
 
 from homeassistant.components.sensor import (
+    SensorDeviceClass,  # Hinzugefügt für die offizielle ABSOLUTE_HUMIDITY Klasse
     SensorEntity,
     SensorStateClass,
 )
@@ -29,8 +32,10 @@ class AbsoluteHumiditySensor(SensorEntity):
 
     _attr_has_entity_name = True
     _attr_name = "Absolute Humidity"
+    
+    # Durch die korrekte Device Class weiß HA exakt, wie der Sensor zu behandeln ist
+    _attr_device_class = SensorDeviceClass.ABSOLUTE_HUMIDITY
     _attr_native_unit_of_measurement = UnitOfDensity.GRAMS_PER_CUBIC_METER
-    _attr_icon = "mdi:water-percent"  # Hübsches Icon, da wir die unpassende Device-Class HUMIDITY meiden
     _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(self, config_entry: ConfigEntry):
@@ -44,7 +49,7 @@ class AbsoluteHumiditySensor(SensorEntity):
         self._config_entry = config_entry
 
     async def async_added_to_hass(self) -> None:
-        """Register callbacks to update when source sensors change."""
+        """Register callbacks."""
         from homeassistant.helpers.event import async_track_state_change_event
 
         async def _async_state_changed_listener(event) -> None:
@@ -94,9 +99,14 @@ class AbsoluteHumiditySensor(SensorEntity):
             temp = float(temp_sensor.state)
             rh = float(rh_sensor.state)
 
-            # Berechnung der absoluten Luftfeuchtigkeit in g/m³
-            # Formel: AH = (6.112 * 2.537 * 10^((7.5 * T)/(237.7 + T)) * RH * 2.1674) / (273.15 + T)
-            ah = (6.112 * 2.537 * (10 ** ((7.5 * temp) / (237.7 + temp))) * rh * 2.1674) / (273.15 + temp)
+            # Einheit des Temperatursensors auslesen (Standard: Celsius)
+            temp_unit = temp_sensor.attributes.get("unit_of_measurement", UnitOfTemperature.CELSIUS)
+            
+            # Falls nötig, automatisch in Celsius konvertieren
+            temp_c = TemperatureConverter.convert(temp, temp_unit, UnitOfTemperature.CELSIUS)
+
+            # Berechnung jetzt immer basierend auf temp_c (Celsius)
+            ah = (6.112 * 2.537 * (10 ** ((7.5 * temp_c) / (237.7 + temp_c))) * rh * 2.1674) / (273.15 + temp_c)
             return round(ah, 2)
         except (ValueError, TypeError):
             return None
