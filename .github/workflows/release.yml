@@ -15,8 +15,7 @@ jobs:
 
       - name: ZIP custom_component
         run: |
-          cd custom_components
-          zip -r ../absolute_humidity.zip absolute_humidity
+          zip -r absolute_humidity.zip custom_components/Absolute-Humidity-Helper
           cd ..
 
       - name: Create Release
