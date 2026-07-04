@@ -29,7 +29,7 @@ class AbsoluteHumiditySensor(SensorEntity):
 
     _attr_has_entity_name = True
     _attr_name = "Absolute Humidity"
-    _attr_unit_of_measurement = UnitOfDensity.GRAMS_PER_CUBIC_METER
+    _attr_native_unit_of_measurement = UnitOfDensity.GRAMS_PER_CUBIC_METER
     _attr_icon = "mdi:water-percent"  # Hübsches Icon, da wir die unpassende Device-Class HUMIDITY meiden
     _attr_state_class = SensorStateClass.MEASUREMENT
 
