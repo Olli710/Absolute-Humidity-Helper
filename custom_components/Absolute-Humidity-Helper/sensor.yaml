@@ -1,0 +1,17 @@
+# Example YAML configuration for Absolute Humidity Helper
+# Add this to your configuration.yaml
+
+sensor:
+  - platform: absolute_humidity
+    name: "Absolute Humidity Living Room"
+    temperature_sensor: sensor.living_room_temperature
+    humidity_sensor: sensor.living_room_humidity
+    create_dew_point: true
+    round_digits: 1
+
+  - platform: absolute_humidity
+    name: "Absolute Humidity Bedroom"
+    temperature_sensor: sensor.bedroom_temperature
+    humidity_sensor: sensor.bedroom_humidity
+    create_dew_point: true
+    round_digits: 1

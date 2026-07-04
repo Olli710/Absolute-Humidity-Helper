@@ -1,12 +1,48 @@
 {
   "config": {
-    "step": {
+    "flow": {
       "user": {
-        "title": "Absolute Luftfeuchtigkeit einrichten",
-        "description": "Bitte wähle die Sensoren für die Berechnung aus.",
+        "title": "Absolute Luftfeuchtigkeit Helfer",
+        "description": "Konfiguriere den absoluten Luftfeuchtigkeitssensor",
         "data": {
+          "name": "Sensor Name",
           "temperature_sensor": "Temperatursensor",
-          "humidity_sensor": "Luftfeuchtigkeitssensor"
+          "humidity_sensor": "Feuchtigkeitssensor",
+          "create_dew_point": "Taupunkt-Sensor erstellen",
+          "round_digits": "Dezimalstellen"
+        },
+        "data_description": {
+          "temperature_sensor": "Entität, die die Temperatur liefert (°C oder °F)",
+          "humidity_sensor": "Entität, die die relative Luftfeuchtigkeit liefert (%)"
+        }
+      },
+      "options": {
+        "title": "Absolute Luftfeuchtigkeit – Optionen",
+        "description": "Sensor-Konfiguration anpassen",
+        "data": {
+          "name": "Sensor Name",
+          "temperature_sensor": "Temperatursensor",
+          "humidity_sensor": "Feuchtigkeitssensor",
+          "create_dew_point": "Taupunkt-Sensor erstellen",
+          "round_digits": "Dezimalstellen"
+        },
+        "data_description": {
+          "temperature_sensor": "Entität, die die Temperatur liefert (°C oder °F)",
+          "humidity_sensor": "Entität, die die relative Luftfeuchtigkeit liefert (%)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Absolute Luftfeuchtigkeit – Optionen",
+        "data": {
+          "name": "Sensor Name",
+          "temperature_sensor": "Temperatursensor",
+          "humidity_sensor": "Feuchtigkeitssensor",
+          "create_dew_point": "Taupunkt-Sensor erstellen",
+          "round_digits": "Dezimalstellen (0–6)"
         }
       }
     }
