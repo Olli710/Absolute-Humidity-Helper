@@ -1,4 +1,5 @@
 """Config flow for Absolute Humidity Helper."""
+
 from typing import Any
 
 import voluptuous as vol
@@ -80,9 +81,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Initialize options flow."""
         self.config_entry = config_entry
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ):
+    async def async_step_init(self, user_input: dict[str, Any] | None = None):
         """Manage options."""
         errors: dict[str, str] = {}
         options = self.config_entry.options

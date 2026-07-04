@@ -1,4 +1,5 @@
 """Constants for Absolute Humidity Helper."""
+
 from homeassistant.const import (
     UnitOfTemperature,
 )

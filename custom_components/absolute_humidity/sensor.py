@@ -1,4 +1,5 @@
 """Absolute Humidity Sensor for Home Assistant."""
+
 from __future__ import annotations
 
 import logging
@@ -45,6 +46,7 @@ _LOGGER = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Calculation helpers
 # ---------------------------------------------------------------------------
+
 
 def _saturation_vapor_pressure(temperature_c: float) -> float:
     """Calculate saturation vapor pressure (kPa) using Magnus formula."""
@@ -112,6 +114,7 @@ def calculate_dew_point(temperature_c: float, humidity: float) -> Optional[float
 # Entity implementation
 # ---------------------------------------------------------------------------
 
+
 class AbsoluteHumiditySensor(SensorEntity):
     """Sensor that calculates absolute humidity from temperature & humidity."""
 
@@ -164,14 +167,18 @@ class AbsoluteHumiditySensor(SensorEntity):
 
         attrs: dict[str, Any] = {
             ATTR_TEMPERATURE: (
-                temp_state.state if temp_state and temp_state.state not in (
-                    STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown"
-                ) else STATE_UNKNOWN
+                temp_state.state
+                if temp_state
+                and temp_state.state
+                not in (STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown")
+                else STATE_UNKNOWN
             ),
             ATTR_RELATIVE_HUMIDITY: (
-                hum_state.state if hum_state and hum_state.state not in (
-                    STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown"
-                ) else STATE_UNKNOWN
+                hum_state.state
+                if hum_state
+                and hum_state.state
+                not in (STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown")
+                else STATE_UNKNOWN
             ),
         }
         if self._create_dew_point and self._dew_point_state is not None:
@@ -186,7 +193,10 @@ class AbsoluteHumiditySensor(SensorEntity):
         """Extract a numeric value from an entity state."""
         state = self.hass.states.get(entity_id)
         if state is None or state.state in (
-            STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown"
+            STATE_UNAVAILABLE,
+            STATE_UNKNOWN,
+            "unavailable",
+            "unknown",
         ):
             return None
         try:
@@ -199,7 +209,9 @@ class AbsoluteHumiditySensor(SensorEntity):
         """Read the temperature unit from the temperature sensor."""
         state = self.hass.states.get(self._temperature_sensor)
         if state and hasattr(state, "attributes"):
-            return state.attributes.get(ATTR_UNIT_OF_MEASUREMENT, UnitOfTemperature.CELSIUS)
+            return state.attributes.get(
+                ATTR_UNIT_OF_MEASUREMENT, UnitOfTemperature.CELSIUS
+            )
         return UnitOfTemperature.CELSIUS
 
     @property
@@ -207,11 +219,14 @@ class AbsoluteHumiditySensor(SensorEntity):
         """Return True only when both source entities are available."""
         temp = self.hass.states.get(self._temperature_sensor)
         hum = self.hass.states.get(self._humidity_sensor)
-        return bool(temp and hum and temp.state not in (
-            STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown"
-        ) and hum.state not in (
-            STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown"
-        ))
+        return bool(
+            temp
+            and hum
+            and temp.state
+            not in (STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown")
+            and hum.state
+            not in (STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown")
+        )
 
     # ------------------------------------------------------------------
     # Update
@@ -228,7 +243,9 @@ class AbsoluteHumiditySensor(SensorEntity):
 
         temp_unit = self._get_temp_unit()
         abs_hum = calculate_absolute_humidity(temperature, humidity, temp_unit)
-        self._state = round(abs_hum, self._round_digits) if abs_hum is not None else None
+        self._state = (
+            round(abs_hum, self._round_digits) if abs_hum is not None else None
+        )
 
         if self._create_dew_point:
             # Dew-point formula works in Celsius
@@ -258,6 +275,7 @@ class AbsoluteHumiditySensor(SensorEntity):
 # Entry setup (UI / config flow)
 # ---------------------------------------------------------------------------
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -267,18 +285,22 @@ async def async_setup_entry(
     temperature_sensor = config_entry.options.get(CONF_TEMPERATURE_SENSOR, "")
     humidity_sensor = config_entry.options.get(CONF_HUMIDITY_SENSOR, "")
 
-    async_add_entities([
-        AbsoluteHumiditySensor(
-            config_entry=config_entry,
-            temperature_sensor=temperature_sensor,
-            humidity_sensor=humidity_sensor,
-        )
-    ], update_before_add=True)
+    async_add_entities(
+        [
+            AbsoluteHumiditySensor(
+                config_entry=config_entry,
+                temperature_sensor=temperature_sensor,
+                humidity_sensor=humidity_sensor,
+            )
+        ],
+        update_before_add=True,
+    )
 
 
 # ---------------------------------------------------------------------------
 # YAML platform setup (legacy)
 # ---------------------------------------------------------------------------
+
 
 async def async_setup_platform(
     hass: HomeAssistant,
@@ -311,10 +333,13 @@ async def async_setup_platform(
         }
         version = "YAML"
 
-    async_add_entities([
-        AbsoluteHumiditySensor(
-            config_entry=_MockConfigEntry(),  # type: ignore[arg-type]
-            temperature_sensor=temperature_sensor,
-            humidity_sensor=humidity_sensor,
-        )
-    ], update_before_add=True)
+    async_add_entities(
+        [
+            AbsoluteHumiditySensor(
+                config_entry=_MockConfigEntry(),  # type: ignore[arg-type]
+                temperature_sensor=temperature_sensor,
+                humidity_sensor=humidity_sensor,
+            )
+        ],
+        update_before_add=True,
+    )

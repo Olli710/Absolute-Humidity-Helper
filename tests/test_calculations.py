@@ -2,6 +2,7 @@ from custom_components.absolute_humidity.sensor import (
     calculate_absolute_humidity,
 )
 
+
 def test_absolute_humidity_calculation():
     """Testet die Berechnung der absoluten Feuchtigkeit bei 20°C und 50% rF."""
     temperature = 20.0
