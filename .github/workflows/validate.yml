@@ -58,7 +58,8 @@ jobs:
           pip install pytest
 
       - name: Run pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
-          # Damit Python den custom_components Ordner beim Importieren findet:
-          export PYTHONPATH="${PYTHONPATH}:${PWD}"
-          pytest tests/
+          python -m pytest tests/
+

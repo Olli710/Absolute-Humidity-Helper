@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Absolute Humidity Helper",
+        "description": "Configure the Absolute Humidity sensor",
+        "data": {
+          "name": "Sensor Name",
+          "temperature_sensor": "Temperature Sensor",
+          "humidity_sensor": "Humidity Sensor",
+          "create_dew_point": "Create Dew Point Sensor",
+          "round_digits": "Decimal Places"
+        },
+        "data_description": {
+          "temperature_sensor": "Entity providing temperature (°C or °F)",
+          "humidity_sensor": "Entity providing relative humidity (%)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Absolute Humidity Options",
+        "data": {
+          "round_digits": "Decimal Places"
+        }
+      }
+    }
+  }
+}

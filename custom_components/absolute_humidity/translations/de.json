@@ -1,6 +1,6 @@
 {
   "config": {
-    "flow": {
+    "step": {
       "user": {
         "title": "Absolute Luftfeuchtigkeit Helfer",
         "description": "Konfiguriere den absoluten Luftfeuchtigkeitssensor",

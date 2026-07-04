@@ -1,7 +1,7 @@
 """Absolute Humidity Helper for Home Assistant."""
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DOMAIN
+from .const import DOMAIN as DOMAIN
 
 async def async_setup_entry(hass, entry: ConfigEntry):
     """Set up Absolute Humidity Helper from a config entry."""
