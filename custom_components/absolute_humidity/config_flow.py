@@ -5,6 +5,10 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
+from homeassistant.helpers import selector  # Wichtig für das Auswahlmenü!
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+)  # Für intelligente Filterung
 
 from .const import (
     DOMAIN,
@@ -54,8 +58,20 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         schema = {
             vol.Optional(CONF_NAME, default=DEFAULT_NAME): str,
-            vol.Required(CONF_TEMPERATURE_SENSOR): str,
-            vol.Required(CONF_HUMIDITY_SENSOR): str,
+            # Intelligente Auswahl für Temperatursensoren
+            vol.Required(CONF_TEMPERATURE_SENSOR): selector.EntitySelector(
+                selector.EntitySelectorConfig(
+                    domain="sensor",
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                )
+            ),
+            # Intelligente Auswahl für Luftfeuchtigkeitssensoren
+            vol.Required(CONF_HUMIDITY_SENSOR): selector.EntitySelector(
+                selector.EntitySelectorConfig(
+                    domain="sensor",
+                    device_class=SensorDeviceClass.HUMIDITY,
+                )
+            ),
             vol.Optional(CONF_CREATE_DEW_POINT, default=True): bool,
             vol.Optional(CONF_ROUND_DIGITS, default=DEFAULT_ROUND_DIGITS): vol.All(
                 vol.Coerce(int), vol.Range(min=0, max=6)
@@ -108,14 +124,26 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 CONF_NAME,
                 default=options.get(CONF_NAME, DEFAULT_NAME),
             ): str,
+            # Selektor im Bearbeitungsmenü (Optionen)
             vol.Optional(
                 CONF_TEMPERATURE_SENSOR,
                 default=options.get(CONF_TEMPERATURE_SENSOR, ""),
-            ): str,
+            ): selector.EntitySelector(
+                selector.EntitySelectorConfig(
+                    domain="sensor",
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                )
+            ),
+            # Selektor im Bearbeitungsmenü (Optionen)
             vol.Optional(
                 CONF_HUMIDITY_SENSOR,
                 default=options.get(CONF_HUMIDITY_SENSOR, ""),
-            ): str,
+            ): selector.EntitySelector(
+                selector.EntitySelectorConfig(
+                    domain="sensor",
+                    device_class=SensorDeviceClass.HUMIDITY,
+                )
+            ),
             vol.Optional(
                 CONF_CREATE_DEW_POINT,
                 default=options.get(CONF_CREATE_DEW_POINT, True),
