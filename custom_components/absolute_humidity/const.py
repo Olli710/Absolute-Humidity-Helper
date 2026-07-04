@@ -1,14 +1,6 @@
 """Constants for Absolute Humidity Helper."""
 from homeassistant.const import (
-    CONF_NAME,
-    CONF_ENTITIES,
-    DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_TEMPERATURE,
-    STATE_CLASS_MEASUREMENT,
-    UNIT_PERCENTAGE,
     UnitOfTemperature,
-    UnitOfPressure,
-    UnitOfMass,
 )
 
 DOMAIN = "absolute_humidity"
