@@ -13,22 +13,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Update manifest version from tag
+        run: |
+          # Extrahiert die reine Versionsnummer aus dem Tag (z.B. 0.2.0 aus v0.2.0)
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Bumping manifest version to: $VERSION"
+          
+          # Bestimmt den Ordnerpfad
+          if [ -d "custom_components/Absolute-Humidity-Helper" ]; then
+              MANIFEST_PATH="custom_components/Absolute-Humidity-Helper/manifest.json"
+          elif [ -d "custom_components/absolute_humidity" ]; then
+              MANIFEST_PATH="custom_components/absolute_humidity/manifest.json"
+          else
+              echo "Error: Directory not found in custom_components"
+              exit 1
+          fi
+          
+          # Schreibt die neue Version in das manifest.json
+          jq --arg ver "$VERSION" '.version = $ver' "$MANIFEST_PATH" > temp.json && mv temp.json "$MANIFEST_PATH"
+          echo "Updated manifest.json:"
+          cat "$MANIFEST_PATH"
+
       - name: ZIP custom_component
         run: |
-          zip -r absolute_humidity.zip custom_components/Absolute-Humidity-Helper
+          cd custom_components
+          if [ -d "Absolute-Humidity-Helper" ]; then
+              zip -r ../absolute_humidity.zip Absolute-Humidity-Helper
+          elif [ -d "absolute_humidity" ]; then
+              zip -r ../absolute_humidity.zip absolute_humidity
+          else
+              echo "Error: Directory not found in custom_components"
+              ls -la
+              exit 1
+          fi
           cd ..
-      - name: ZIP custom_component
-        run: |
-            cd custom_components
-            if [ -d "absolute_humidity" ]; then
-                zip -r ../absolute_humidity.zip absolute_humidity
-            else
-                echo "Error: absolute_humidity directory not found in custom_components"
-                ls -la
-                exit 1
-           fi
-            cd ..
-   
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2

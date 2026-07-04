@@ -114,14 +114,7 @@ class AbsoluteHumiditySensor(SensorEntity):
             )
 
             # Formel für absolute Feuchtigkeit in g/m³
-            ah = (
-                6.112
-                * 2.537
-                * (10 ** ((7.5 * temp_c) / (237.7 + temp_c)))
-                * rh
-                * 2.1674
-            ) / (273.15 + temp_c)
-            
+            ah = (6.112 * (10 ** ((7.5 * temp) / (237.7 + temp))) * rh * 2.1674) / (273.15 + temp)
             return round(ah, 2)
         except (ValueError, TypeError):
             return None
