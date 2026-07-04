@@ -1,0 +1,16 @@
+# Home Assistant
+.hass/
+*.db
+*.log
+*.pyc
+__pycache__/
+
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp

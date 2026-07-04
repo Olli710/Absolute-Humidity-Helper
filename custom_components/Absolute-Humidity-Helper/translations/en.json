@@ -1,0 +1,17 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Absolute Humidity Sensor Configuration",
+        "data": {
+          "temperature_sensor": "Temperature Sensor",
+          "humidity_sensor": "Humidity Sensor"
+        }
+      }
+    },
+    "error": {
+      "invalid_sensors": "Invalid temperature or humidity sensor selected."
+    }
+  },
+  "options": {}
+}

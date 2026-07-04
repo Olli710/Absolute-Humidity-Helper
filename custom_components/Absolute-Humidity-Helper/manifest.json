@@ -1,0 +1,13 @@
+{
+  "domain": "absolute_humidity",
+  "name": "Absolute-Humidity-Helper",
+  "documentation": "https://github.com/Olli710/Absolute-Humidity-Helper",
+  "issue_tracker": "https://github.com/Olli710/Absolute-Humidity-Helper/issues",
+  "dependencies": [],
+  "codeowners": ["@Olli710"],
+  "requirements": [],
+  "config_flow": true,
+  "version": "0.1.0",
+  "hacs": "0.1.0",
+  "homeassistant": "2024.6.0"
+}
