@@ -8,7 +8,6 @@ from typing import Any, Optional
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
-    SensorDeviceClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -18,7 +17,7 @@ from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant, State
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.unit_conversion import TemperatureConverter
@@ -33,9 +32,7 @@ from .const import (
     CONF_HUMIDITY_SENSOR,
     MAGNUS_A,
     MAGNUS_B,
-    EPSILON,
     ICON_ABSOLUTE_HUMIDITY,
-    ICON_DEW_POINT,
     ATTR_DEW_POINT,
     ATTR_TEMPERATURE,
     ATTR_RELATIVE_HUMIDITY,

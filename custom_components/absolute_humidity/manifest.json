@@ -1,12 +1,12 @@
 {
   "domain": "absolute_humidity",
   "name": "Absolute-Humidity-Helper",
-  "documentation": "https://github.com/Olli710/Absolute-Humidity-Helper",
-  "issue_tracker": "https://github.com/Olli710/Absolute-Humidity-Helper/issues",
-  "dependencies": [],
   "codeowners": ["@Olli710"],
-  "requirements": [],
   "config_flow": true,
-  "version": "0.3.0",
-  "iot_class": "local_polling"
+  "dependencies": [],
+  "documentation": "https://github.com/Olli710/Absolute-Humidity-Helper",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Olli710/Absolute-Humidity-Helper/issues",
+  "requirements": [],
+  "version": "0.4.0"
 }
