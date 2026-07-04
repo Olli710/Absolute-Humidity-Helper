@@ -7,7 +7,7 @@
   "codeowners": ["@Olli710"],
   "requirements": [],
   "config_flow": true,
-  "version": "0.2.0",
+  "version": "0.2.5",
   "hacs": "1.0.0",
   "homeassistant": "2024.6.0",
   "iot_class": "local_polling"
