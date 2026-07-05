@@ -18,9 +18,12 @@ from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
+import homeassistant.helpers.device_registry as dr
+import homeassistant.helpers.entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_conversion import TemperatureConverter
 
 from .const import (
@@ -44,7 +47,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Calculation helpers
+# Calculation helpers (unverändert)
 # ---------------------------------------------------------------------------
 
 
@@ -58,14 +61,8 @@ def calculate_absolute_humidity(
     humidity: float,
     temp_unit: str = UnitOfTemperature.CELSIUS,
 ) -> Optional[float]:
-    """
-    Calculate absolute humidity in g/m³ from temperature and relative humidity.
-
-    Uses:  AH (g/m³) = (e × 1000) / (461.5 × T_K)
-    where e = vapor pressure (kPa), T_K = temperature in Kelvin.
-    """
+    """Calculate absolute humidity in g/m³ from temperature and relative humidity."""
     try:
-        # Normalise temperature to Celsius
         temperature_c = (
             (temperature - 32) * 5.0 / 9.0
             if temp_unit == UnitOfTemperature.FAHRENHEIT
@@ -83,7 +80,6 @@ def calculate_absolute_humidity(
 
         e = (humidity / 100.0) * _saturation_vapor_pressure(temperature_c)
         T_kelvin = temperature_c + 273.15
-        # kPa → Pa (×1000), result g/m³
         absolute_humidity = (e * 1000.0) / (461.5 * T_kelvin) * 1000.0
         return absolute_humidity
 
@@ -93,12 +89,7 @@ def calculate_absolute_humidity(
 
 
 def calculate_dew_point(temperature_c: float, humidity: float) -> Optional[float]:
-    """
-    Calculate dew point in °C using the Magnus formula.
-
-    Td = (B·γ) / (A − γ)
-    γ = (A·T) / (B+T) + ln(RH/100)
-    """
+    """Calculate dew point in °C using the Magnus formula."""
     try:
         if not (0 < humidity <= 100):
             return None
@@ -120,6 +111,7 @@ class AbsoluteHumiditySensor(SensorEntity):
 
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = "g/m³"
+    _attr_should_poll = False  # Wir aktualisieren über State-Change-Events
 
     def __init__(
         self,
@@ -139,6 +131,7 @@ class AbsoluteHumiditySensor(SensorEntity):
         )
         self._state: Optional[float] = None
         self._dew_point_state: Optional[float] = None
+        self._device_id: str | None = None  # Wird in async_added_to_hass ermittelt
 
         self._attr_unique_id = config_entry.unique_id or DOMAIN
         self._attr_name = config_entry.title
@@ -149,15 +142,61 @@ class AbsoluteHumiditySensor(SensorEntity):
     # Device info & registry
     # ------------------------------------------------------------------
     @property
-    def device_info(self) -> DeviceInfo:
-        """Return device information to tie this sensor to source sensors."""
+    def device_info(self) -> DeviceInfo | None:
+        """
+        Tie this sensor to the device of the temperature sensor,
+        falls dieser einem Gerät zugeordnet ist.
+        """
+        if self._device_id:
+            return DeviceInfo(identifiers={(DOMAIN, self._device_id)})
+
+        # Fallback: eigenes virtuelles Gerät, falls keine Zuordnung möglich ist
         return DeviceInfo(
             identifiers={(DOMAIN, self._attr_unique_id)},
             name=self._attr_name,
             manufacturer="Home Assistant Community",
             model="Absolute Humidity Helper",
-            sw_version=self._config.version,
         )
+
+    async def async_added_to_hass(self) -> None:
+        """Run when entity about to be added to hass."""
+        await super().async_added_to_hass()
+
+        # Versuche, das Gerät des Temperatursensors zu ermitteln
+        ent_reg = er.async_get(self.hass)
+        dev_reg = dr.async_get(self.hass)
+
+        temp_entry = ent_reg.async_get(self._temperature_sensor)
+        if temp_entry and temp_entry.device_id:
+            device = dev_reg.async_get(temp_entry.device_id)
+            if device:
+                # Wir "hängen" uns an dasselbe Device an, indem wir
+                # dessen erste Identifier übernehmen.
+                self._device_id = next(iter(device.identifiers))[1]
+                _LOGGER.debug(
+                    "Linking %s to existing device %s",
+                    self.entity_id,
+                    device.name,
+                )
+
+        # State-Change-Listener registrieren, damit sich der Sensor
+        # sofort aktualisiert, wenn Quellsensoren sich ändern.
+        self.async_on_remove(
+            async_track_state_change_event(
+                self.hass,
+                [self._temperature_sensor, self._humidity_sensor],
+                self._async_source_state_changed,
+            )
+        )
+
+        # Initiale Berechnung
+        self._recalculate()
+
+    @callback
+    def _async_source_state_changed(self, event) -> None:
+        """Handle state changes of source sensors."""
+        self._recalculate()
+        self.async_write_ha_state()
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -228,11 +267,16 @@ class AbsoluteHumiditySensor(SensorEntity):
             not in (STATE_UNAVAILABLE, STATE_UNKNOWN, "unavailable", "unknown")
         )
 
+    @property
+    def native_value(self) -> Optional[float]:
+        """Return the calculated absolute humidity value."""
+        return self._state
+
     # ------------------------------------------------------------------
     # Update
     # ------------------------------------------------------------------
-    async def async_update(self) -> None:
-        """Recalculate absolute humidity and dew point."""
+    def _recalculate(self) -> None:
+        """Recalculate absolute humidity and dew point (synchron, kein I/O)."""
         temperature = self._get_numeric_value(self._temperature_sensor)
         humidity = self._get_numeric_value(self._humidity_sensor)
 
@@ -248,7 +292,6 @@ class AbsoluteHumiditySensor(SensorEntity):
         )
 
         if self._create_dew_point:
-            # Dew-point formula works in Celsius
             temp_c = (
                 TemperatureConverter.convert(
                     temperature, UnitOfTemperature.FAHRENHEIT, UnitOfTemperature.CELSIUS
@@ -269,6 +312,13 @@ class AbsoluteHumiditySensor(SensorEntity):
                 self._dew_point_state = None
         else:
             self._dew_point_state = None
+
+    async def async_update(self) -> None:
+        """
+        Wird nur noch als Fallback genutzt (should_poll=False),
+        z.B. beim initialen update_before_add.
+        """
+        self._recalculate()
 
 
 # ---------------------------------------------------------------------------
@@ -309,8 +359,6 @@ async def async_setup_platform(
     discovery_info: dict[str, Any] | None = None,
 ) -> None:
     """Set up the sensor via YAML configuration."""
-    from .const import CONF_TEMPERATURE_SENSOR, CONF_HUMIDITY_SENSOR
-
     name = config.get(CONF_NAME, DEFAULT_NAME)
     temperature_sensor = config.get(CONF_TEMPERATURE_SENSOR, "")
     humidity_sensor = config.get(CONF_HUMIDITY_SENSOR, "")
@@ -321,7 +369,6 @@ async def async_setup_platform(
         _LOGGER.error("Missing temperature_sensor or humidity_sensor in YAML config")
         return
 
-    # Create a minimal mock ConfigEntry for the entity constructor
     class _MockConfigEntry:
         unique_id = f"absolute_humidity_{name.lower().replace(' ', '_')}"
         title = name
