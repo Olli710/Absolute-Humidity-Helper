@@ -55,9 +55,7 @@ def _build_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
 
     return vol.Schema(
         {
-            vol.Optional(
-                CONF_NAME, default=defaults.get(CONF_NAME, DEFAULT_NAME)
-            ): str,
+            vol.Optional(CONF_NAME, default=defaults.get(CONF_NAME, DEFAULT_NAME)): str,
             vol.Required(
                 CONF_TEMPERATURE_SENSOR,
                 default=defaults.get(CONF_TEMPERATURE_SENSOR, vol.UNDEFINED),
