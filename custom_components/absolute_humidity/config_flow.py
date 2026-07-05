@@ -7,35 +7,30 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import CONF_NAME
 from homeassistant.helpers import selector
-from homeassistant.components.sensor import SensorDeviceClass
 
 from .const import (
-    DOMAIN,
-    DEFAULT_NAME,
-    DEFAULT_ROUND_DIGITS,
     CONF_CREATE_DEW_POINT,
+    CONF_HUMIDITY_SENSOR,
     CONF_ROUND_DIGITS,
     CONF_TEMPERATURE_SENSOR,
-    CONF_HUMIDITY_SENSOR,
+    DEFAULT_NAME,
+    DEFAULT_ROUND_DIGITS,
+    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def _temperature_selector() -> selector.EntitySelector:
-    """Return an entity selector for temperature sensors.
-
-    Nutzt device_class als Liste (robuster gegen API-Änderungen)
-    und fällt zusätzlich nicht komplett aus, falls Sensoren
-    keine device_class gesetzt haben - siehe Hinweis in Doku.
-    """
+    """Return an entity selector for temperature sensors."""
     return selector.EntitySelector(
         selector.EntitySelectorConfig(
             domain="sensor",
             device_class=[SensorDeviceClass.TEMPERATURE],
-        )
+        ),
     )
 
 
@@ -45,7 +40,7 @@ def _humidity_selector() -> selector.EntitySelector:
         selector.EntitySelectorConfig(
             domain="sensor",
             device_class=[SensorDeviceClass.HUMIDITY],
-        )
+        ),
     )
 
 
@@ -66,17 +61,17 @@ def _build_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
             ): _humidity_selector(),
             vol.Optional(
                 CONF_CREATE_DEW_POINT,
-                default=defaults.get(CONF_CREATE_DEW_POINT, True),
+                default=defaults.get(CONF_CREATE_DEW_POINT, False),
             ): bool,
             vol.Optional(
                 CONF_ROUND_DIGITS,
                 default=defaults.get(CONF_ROUND_DIGITS, DEFAULT_ROUND_DIGITS),
             ): vol.All(vol.Coerce(int), vol.Range(min=0, max=6)),
-        }
+        },
     )
 
 
-def _validate_input(hass, user_input: dict[str, Any]) -> dict[str, str]:
+def _validate_input(hass: Any, user_input: dict[str, Any]) -> dict[str, str]:
     """Validate user input, return dict of errors."""
     errors: dict[str, str] = {}
 
@@ -134,7 +129,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
-    ) -> "OptionsFlowHandler":
+    ) -> OptionsFlowHandler:
         """Get the options flow."""
         return OptionsFlowHandler(config_entry)
 
@@ -159,8 +154,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             if not errors:
                 return self.async_create_entry(data=user_input)
-            # Damit bei Fehlern die zuletzt eingegebenen Werte
-            # im Formular erhalten bleiben:
             options = user_input
 
         schema = _build_schema(options)

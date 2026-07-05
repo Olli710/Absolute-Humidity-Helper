@@ -1,33 +1,30 @@
 {
+  "title": "Absolute Humidity Helper",
   "config": {
     "step": {
       "user": {
         "title": "Absolute Humidity Helper",
-        "description": "Configure the Absolute Humidity sensor",
-        "data": {
-          "name": "Sensor Name",
-          "temperature_sensor": "Temperature Sensor",
-          "humidity_sensor": "Humidity Sensor",
-          "create_dew_point": "Create Dew Point Sensor",
-          "round_digits": "Decimal Places"
-        },
-        "data_description": {
-          "temperature_sensor": "Entity providing temperature (°C or °F)",
-          "humidity_sensor": "Entity providing relative humidity (%)"
-        }
+        "description": "Select the temperature and humidity sensor:"
       }
     },
-    "abort": {
-      "already_configured": "Device is already configured"
+    "data": {
+      "name": "Sensor Name",
+      "temperature_sensor": "Temperature Sensor",
+      "humidity_sensor": "Humidity Sensor",
+      "create_dew_point": "Create Dew Point Sensor",
+      "round_digits": "Decimal Places"
+    },
+    "errors": {
+      "required_temperature_sensor": "Please select a temperature sensor.",
+      "required_humidity_sensor": "Please select a humidity sensor.",
+      "entity_not_found": "The selected entity was not found. Make sure it exists in Home Assistant."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Absolute Humidity Options",
-        "data": {
-          "round_digits": "Decimal Places"
-        }
+        "title": "Absolute Humidity Helper Options",
+        "description": "Adjust the settings:"
       }
     }
   }

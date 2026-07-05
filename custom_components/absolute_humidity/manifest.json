@@ -1,6 +1,6 @@
 {
   "domain": "absolute_humidity",
-  "name": "Absolute-Humidity-Helper",
+  "name": "Absolute Humidity Helper",
   "codeowners": ["@Olli710"],
   "config_flow": true,
   "dependencies": [],
@@ -8,5 +8,5 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/Olli710/Absolute-Humidity-Helper/issues",
   "requirements": [],
-  "version": "0.4.5"
+  "version": "0.5.0"
 }

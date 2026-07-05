@@ -4,13 +4,15 @@ from homeassistant.config_entries import ConfigEntry
 
 from .const import DOMAIN as DOMAIN
 
+__version__ = "0.5.0"
 
-async def async_setup_entry(hass, entry: ConfigEntry):
+
+async def async_setup_entry(hass, entry: ConfigEntry) -> bool:
     """Set up Absolute Humidity Helper from a config entry."""
     await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
 
 
-async def async_unload_entry(hass, entry: ConfigEntry):
+async def async_unload_entry(hass, entry: ConfigEntry) -> bool:
     """Unload the config entry."""
     return await hass.config_entries.async_forward_entry_unload(entry, "sensor")

@@ -1,49 +1,30 @@
 {
+  "title": "Absolute Humidity Helper",
   "config": {
     "step": {
       "user": {
-        "title": "Absolute Luftfeuchtigkeit Helfer",
-        "description": "Konfiguriere den absoluten Luftfeuchtigkeitssensor",
-        "data": {
-          "name": "Sensor Name",
-          "temperature_sensor": "Temperatursensor",
-          "humidity_sensor": "Feuchtigkeitssensor",
-          "create_dew_point": "Taupunkt-Sensor erstellen",
-          "round_digits": "Dezimalstellen"
-        },
-        "data_description": {
-          "temperature_sensor": "Entität, die die Temperatur liefert (°C oder °F)",
-          "humidity_sensor": "Entität, die die relative Luftfeuchtigkeit liefert (%)"
-        }
-      },
-      "options": {
-        "title": "Absolute Luftfeuchtigkeit – Optionen",
-        "description": "Sensor-Konfiguration anpassen",
-        "data": {
-          "name": "Sensor Name",
-          "temperature_sensor": "Temperatursensor",
-          "humidity_sensor": "Feuchtigkeitssensor",
-          "create_dew_point": "Taupunkt-Sensor erstellen",
-          "round_digits": "Dezimalstellen"
-        },
-        "data_description": {
-          "temperature_sensor": "Entität, die die Temperatur liefert (°C oder °F)",
-          "humidity_sensor": "Entität, die die relative Luftfeuchtigkeit liefert (%)"
-        }
+        "title": "Absolute Humidity Helper",
+        "description": "Wählen Sie den Temperatur- und Feuchtigkeitssensor:"
       }
+    },
+    "data": {
+      "name": "Sensorname",
+      "temperature_sensor": "Temperatursensor",
+      "humidity_sensor": "Feuchtigkeitssensor",
+      "create_dew_point": "Taupunktsensor erstellen",
+      "round_digits": "Dezimalstellen"
+    },
+    "errors": {
+      "required_temperature_sensor": "Bitte wählen Sie einen Temperatursensor.",
+      "required_humidity_sensor": "Bitte wählen Sie einen Feuchtigkeitssensor.",
+      "entity_not_found": "Die ausgewählte Entität wurde nicht gefunden. Stellen Sie sicher, dass sie in Home Assistant vorhanden ist."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Absolute Luftfeuchtigkeit – Optionen",
-        "data": {
-          "name": "Sensor Name",
-          "temperature_sensor": "Temperatursensor",
-          "humidity_sensor": "Feuchtigkeitssensor",
-          "create_dew_point": "Taupunkt-Sensor erstellen",
-          "round_digits": "Dezimalstellen (0–6)"
-        }
+        "title": "Absolute Humidity Helper Einstellungen",
+        "description": "Passen Sie die Einstellungen an:"
       }
     }
   }
